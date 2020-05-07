@@ -11,7 +11,7 @@ from sklearn.cluster import KMeans
 import pandas as pd
 import copy
 import matplotlib.pyplot as plt
-
+import random
 
 alpha = 0.8
 # 分的主题数量
@@ -32,7 +32,7 @@ for record in data_blue:
     if record[1] in user_hm:
         user_hm[record[1]][record[0]] = record[2]
     else:
-        user_hm[record[1]] = {}     # 每一个用户对任务的回答集合
+        user_hm[record[1]] = {}         # 每一个用户对任务的回答集合
         user_hm[record[1]][record[0]] = record[2]
 
 # task hash map
@@ -110,6 +110,83 @@ clf = clf.fit(loan)
 loan_data['label'] = clf.labels_
 loan_data_array = loan_data.values
 # print(loan_data.values)
+
+
+
+
+# clf = KMeans(n_clusters=4)
+# loan = np.array(loan_data[a])
+# clf = clf.fit(loan)
+# #提取不同类别的数据
+# loan_data['label'] = clf.labels_
+#
+
+
+righta = 0
+rightb = 0
+data = []
+
+for t in tasks:
+    row_data = []
+    # row_data.append(t.id)
+    righta = 0
+    rightb = 0
+    for u in users:
+        if u.id % 2 == 0:
+
+            if u.answer[t] == t.truth:
+                righta += 1
+        else:
+
+            if u.answer[t] == t.truth:
+                rightb += 1
+
+    row_data.append(righta/20*random.random())
+    row_data.append(rightb/19*random.random())
+    data.append(row_data)
+
+
+
+with open("../Data/Bluebird/fenlei.csv", "w") as csvfile:
+    writer = csv.writer(csvfile)
+    writer.writerows(data)
+
+
+# # 参数初始化
+# inputfile = '../Data/Bluebird/fenlei.csv'
+#
+# loan_data = pd.DataFrame(pd.read_csv(inputfile, header=None, sep=','))
+# a = []
+# for i in range(0, 2):
+#     a.append(i)
+# clf = KMeans(n_clusters=4)
+# loan = np.array(loan_data[a])
+# clf = clf.fit(loan)
+# #提取不同类别的数据
+# loan_data['label'] = clf.labels_
+# print(loan_data)
+# loan_data0 = loan_data.loc[loan_data["label"] == 0]
+# loan_data1 = loan_data.loc[loan_data["label"] == 1]
+# loan_data2 = loan_data.loc[loan_data["label"] == 2]
+# loan_data3 = loan_data.loc[loan_data["label"] == 3]
+#
+# print(len(loan_data0))
+# print(len(loan_data1))
+# print(len(loan_data2))
+# print(len(loan_data3))
+#
+#
+# plt.scatter(loan_data0[0],loan_data0[1],50,color='#99CC01',marker='o',linewidth=2,alpha=0.8)
+# plt.scatter(loan_data1[0],loan_data1[1],50,color='#FE0000',marker='o',linewidth=2,alpha=0.8)
+# plt.scatter(loan_data2[0],loan_data2[1],50,color='#0000FE',marker='o',linewidth=2,alpha=0.8)
+# plt.scatter(loan_data3[0],loan_data3[1],50,color='#000000',marker='o',linewidth=2,alpha=0.8)
+
+# plt.xlabel('kind1 task')
+# plt.ylabel('kind2 task')
+# plt.xlim(0, 1)
+# plt.ylim(0, 1)
+# plt.grid(color='#95a5a6',linestyle='--', linewidth=1,axis='both',alpha=0.4)
+plt.show()
 
 # 分好类了
 for t in tasks:
@@ -251,10 +328,10 @@ for u in users:
 # show_data.append(data)
 # print(show_data[2])
 
-# with open("../Result/voting.csv", "w") as csvfile:
-#     writer = csv.writer(csvfile)
-#     writer.writerows(show_data)
-
+with open("../Result/voting.csv", "w") as csvfile:
+    writer = csv.writer(csvfile)
+    writer.writerows(show_data)
+#
 # 现在是画多数表决和加权表决的图
 # 条形图的绘制--水平交错条形图
 # 导入第三方模块
@@ -271,8 +348,8 @@ for u in users:
 #
 # # 绘制水平交错条形图
 # bar_width = 0.4
-# plt.bar(x = np.arange(len(name)), height = major, label = 'Major', color = 'steelblue', width = bar_width)
-# plt.bar(x = np.arange(len(name))+bar_width, height = aver, label = 'Average', color = 'indianred', width = bar_width)
+# plt.bar(x = np.arange(len(name)), height = major, label = 'MV', color = 'steelblue', width = bar_width)
+# plt.bar(x = np.arange(len(name))+bar_width, height = aver, label = 'WMV', color = 'indianred', width = bar_width)
 # # 添加刻度标签（向右偏移0.225）
 # plt.xticks(np.arange(5)+0.2, name)
 # # 添加y轴标签
@@ -851,31 +928,33 @@ for idx in range(6):
         capacity_list[k] += 1
 
     after_accuracy.append(right_count/len(task))
-# print("去除异常用户之前")
-# for u in before_accuracy:
-#     print(u)
-#
-# print("去除了异常用户之后： ")
-# for u in after_accuracy:
-#     print(u)
 
-# table = pd.read_excel('../Result/remove.xlsx')
-#
-# print(table)
-# capacity = table.capacity
-# before = table.before_accuracy.unique()
-# after = table.after_accuracy
-#
-# x = capacity
-# y1, y2 = before, after
-# plt.plot(x, np.array(y1), marker="o", label="before")
-# plt.plot(x, np.array(y2), marker="*", label="after")
-# plt.xlabel("user's capacity of tasks")
-# plt.ylabel('accuracy')
-#
-# plt.ylim(0, 1)
-# plt.legend()
-# plt.show()
+
+print("去除异常用户之前")
+for u in before_accuracy:
+    print(u)
+
+print("去除了异常用户之后： ")
+for u in after_accuracy:
+    print(u)
+
+table = pd.read_excel('../Result/remove_1.xlsx')
+
+print(table)
+capacity = table.capacity
+before = table.before_accuracy.unique()
+after = table.after_accuracy
+
+x = capacity
+y1, y2 = before, after
+plt.plot(x, np.array(y1), marker="o", label="before")
+plt.plot(x, np.array(y2), marker="*", label="after")
+plt.xlabel("user's capacity of tasks")
+plt.ylabel('accuracy')
+
+plt.ylim(0, 1)
+plt.legend()
+plt.show()
 #
 # import random
 #
@@ -994,7 +1073,7 @@ plt.plot(x, np.array(y1), marker="o", label="Precision")
 plt.plot(x, np.array(y2), marker="*", label="Recall")
 plt.plot(x, np.array(y3), marker="+", label="F-score")
 
-plt.xlabel("Anomalous user's accuracy")
+plt.xlabel("Anomalous workers' accuracy")
 plt.ylabel('Evaluating criteria')
 plt.gca().invert_xaxis()
 plt.ylim(0, 1)
